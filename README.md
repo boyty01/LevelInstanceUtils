@@ -22,5 +22,6 @@ Simple system to handle making runtime changes to specific level instance actors
 
 7. Assign the script to the appropriate guid in the managers map.
 
-
+# extra context 
+Script components have  retry time and max retries properties to to resolve race conditions when the world is first brought up. Since managers register themselves on  begin play, it's quite possible that a script component might try to access it's manager before the subsystem has stored a reference. The subsystem is hard coded to reject any client (script component) request for their managers for the first 1 second of game time to allow managers time to register. If a script components query is rejected, it will try again in {RetryTime} seconds for {MaxRetries} attempts before giving up. The delay in the client retrieving and executing it's scripts may cause a brief period at the start of play where the client is visibly in it's default state. You can tweak these values to balance mitigating this issue with the race conditions for a smoother experience. For level instances that load later than the worlds initial begin play there should be very little delay before scripts execute. 
 
