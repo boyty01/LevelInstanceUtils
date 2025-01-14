@@ -22,7 +22,7 @@ struct FLevelInstanceManagerClientData
 	TSubclassOf<USubLevelActorScriptBase> ScriptClass{nullptr};
 };
 
-UCLASS()
+UCLASS(Blueprintable)
 class LEVELINSTANCEUTILS_API ASubLevelActorManagerBase : public AActor
 {
 	GENERATED_BODY()
