@@ -12,6 +12,7 @@ Simple system to handle making runtime changes to specific level instance actors
 4. Set the Manager Name value to the same value you set in your script components.
 
 5. To simplify identifying the actors you want to manage, you can use the editor function to search a specified level instance for every actor that has a script component whose manager name matches this manager. Every match will automatically be added as an entry in the managers Guid map.
+
 ![image](https://github.com/user-attachments/assets/4ad8484e-4c48-451f-b62f-cef0fa6528cb)
 
 6. Subclass SubLevelActorScriptBase and override the Execute function with the logic you want to perform on the actor.
