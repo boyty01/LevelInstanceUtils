@@ -19,3 +19,6 @@ Simple system to handle making runtime changes to specific level instance actors
   
 7. Assign the script to the appropriate guid in the managers map.
 
+![image](https://github.com/user-attachments/assets/98bae642-994a-4abe-b775-ecdfd7c52925)
+
+
