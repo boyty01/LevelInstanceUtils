@@ -21,7 +21,8 @@ void USubLevelActorScriptComponent::InitScript(TSubclassOf<class USubLevelActorS
 	AActor* Owner = GetOwner();
 	if (!ScriptClass || !Owner) return;
 
-	USubLevelActorScriptBase* Script = NewObject<USubLevelActorScriptBase>(Owner, ScriptClass);
+	// Just call the CDO rather than making a new instance.
+	USubLevelActorScriptBase* Script = ScriptClass.GetDefaultObject(); //NewObject<USubLevelActorScriptBase>(Owner, ScriptClass);
 	if (Script)
 	{
 		Script->Execute(Owner);
