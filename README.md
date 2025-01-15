@@ -24,5 +24,10 @@ Simple system to handle making runtime changes to specific level instance actors
 7. Assign the script to the appropriate guid in the managers map.
 
 # extra context 
+
+## Built-in Race Condition Resolution
 If a client requests a script from the subsystem for a manager that isn't registered, the request is queued and dispatched as soon as the manager becomes available. This replaces the old approach of a component retrying after a specified delay, resulting in guaranteed near-instant script execution as soon as possible, at any point in the world life cycle.
+
+## Hard references to script Classes in the manager
+The original idea was to Asynchronously load script classes as soon as they were requested, to avoid any unnecessary memory hogging before they're actually needed in a world partition map - naturally the player could be wandering in an area that didn't ever load an actor that needed a specific script. After some deliberation though, it felt as though the Script classes were typically lightweight enough to be negligible on memory footprint until a pretty unreasonable number of scripts were added to a single map. Any lazy loaded hard class references would be almost immediately dropped out of scope once they're loaded due to the way unreals garbage collection works, unless we started storing those hard references in the manager after they were loaded - which ultimately would lead us to situations where assets are just continuously being loaded and unloaded. So for now I've decided that Managers keep hard references to script classes for both the sake of simple, readable code for more predictable game performance.
 
