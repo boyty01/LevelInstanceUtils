@@ -14,6 +14,33 @@ struct FLevelInstanceData
 
 
 };
+
+/*Stored data for instances where a script component requests data before a manager is registered. Stores a ref to 
+  the component that requested it and the actor Id the data is for. 
+*/
+USTRUCT(BlueprintType)
+struct FLevelManagerClientRequest
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FName ManagerName{NAME_None};
+
+	UPROPERTY()
+	TWeakObjectPtr<class USubLevelActorScriptComponent> ScriptComponent{ nullptr };
+
+	UPROPERTY()
+	FGuid ActorId;
+
+	FLevelManagerClientRequest() {};
+
+	FLevelManagerClientRequest(FName managerName, TWeakObjectPtr<class USubLevelActorScriptComponent> scriptComponent, FGuid actorId)
+	{
+		ManagerName = managerName;
+		ScriptComponent = scriptComponent;
+		ActorId = actorId;
+	}
+};
 /**
  * 
  */
@@ -30,23 +57,28 @@ public:
 	UFUNCTION(BlueprintCallable, Category ="LevelInstanceSubsystem")
 	bool RegisterManagerClass(const FName Name, ASubLevelActorManagerBase* Actor, const bool bOverrideExisting = true);
 
+
 	// Get the manager class by its registered name.
 	UFUNCTION(BlueprintCallable, Category="LevelInstanceSubsystem")
 	bool GetManagerByName(const FName ManagerName, ASubLevelActorManagerBase*& Manager);
 	
-	UFUNCTION(BlueprintCallable, Category = "LevelInstanceSubsystem")
-	bool IsReadyForClients() { return bReadyForQueries; };
+
+	/*Handles getting script data for a client component as soon as the manager is available. if the manager is available, it will
+	call back immediately, if not it will queue the request until the manager has registered. */
+	UFUNCTION(BlueprintCallable, Category ="LevelInstanceSubsystem")
+	void RequestScriptFromManager(const FLevelManagerClientRequest RequestData);
 
 private:
 
-	void ReleaseQueryLock() {
-		bReadyForQueries = true;
-	};
+	void OnManagerAdded(FName ManagerName, ASubLevelActorManagerBase* Manager);
 
-	/*Forces a slight delay on any actors requesting data to ensure managers get time to register 
-	before components start grabbing data when the world loads.
-	*/
-	bool bReadyForQueries{ false };
+	void QueueRequest(FLevelManagerClientRequest Request);
+
+	void DispatchScriptRequest();
+
+	// stores any queued requests for a manager that may have been received before the manager is ready.
+	TMultiMap<FName, FLevelManagerClientRequest> QueuedRequests;
+
 
 	TMap<FName, ASubLevelActorManagerBase*> Managers;
 };

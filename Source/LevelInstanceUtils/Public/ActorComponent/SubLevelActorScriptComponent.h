@@ -19,6 +19,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category="SubLevelManager")
 	FName GetSubLevelManagerName() { return ManagerName; };
 
+	void InitScript(TSubclassOf<class USubLevelActorScriptBase> ScriptClass);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -28,23 +30,10 @@ protected:
 	FName ManagerName;
 
 	UFUNCTION()
-	void SetupOwner();
+	void RequestScript();
 
-	/*How long to wait before retrying a data query if the subsystem wasn't ready. */
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category ="Settings")
-	float RetryTime{0.5f};
-
-	//How many times this component will retry a rejected data query before giving up.
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category ="Settings")
-	int MaxRetries{3};
 
 private:
-
-	int NumRetries{ 0 };
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 		
 };
