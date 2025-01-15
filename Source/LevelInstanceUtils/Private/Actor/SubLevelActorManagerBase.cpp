@@ -38,9 +38,6 @@ ASubLevelActorManagerBase::ASubLevelActorManagerBase()
 void ASubLevelActorManagerBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
-
-
-
 }
 
 

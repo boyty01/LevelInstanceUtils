@@ -25,14 +25,6 @@
 #include "LevelInstanceRuntimeSubsystem.generated.h"
 
 
-USTRUCT()
-struct FLevelInstanceData
-{
-	GENERATED_BODY();
-
-
-};
-
 /*Stored data for instances where a script component requests data before a manager is registered. Stores a ref to 
   the component that requested it and the actor Id the data is for. 
 */
