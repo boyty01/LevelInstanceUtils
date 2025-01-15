@@ -15,9 +15,19 @@ struct FLevelInstanceManagerClientData
 {
 	GENERATED_BODY()
 
+	//For reference only. The name of the Level instance this actor is part of. Populated when using the editor macro.
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Instance")
+	FName OwningLevelInstance{FName("Unspecified")};
+
+	//For Reference only. The FName of the associated actor. This is the shared name of the actor that is identical in every instance. Populated when using the editor macro.
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category="Actor")
 	FName ActorName{NAME_None};
 
+	//A user friendly name to help designers identify this actor in the editor.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Friendly Name")
+	FName FriendlyName{NAME_None};
+
+	//The script class that should be handed to the key actor on request
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Script")
 	TSubclassOf<USubLevelActorScriptBase> ScriptClass{nullptr};
 };

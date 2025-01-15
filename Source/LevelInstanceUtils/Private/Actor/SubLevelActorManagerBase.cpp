@@ -32,7 +32,8 @@ void ASubLevelActorManagerBase::ClaimGuidsFromlevel()
 		{
 			FGuid id = LActor->GetActorInstanceGuid();
 			FLevelInstanceManagerClientData data;
-			data.ActorName = LActor->GetFName();
+			data.OwningLevelInstance = FName(LevelInstanceToQuery->GetActorLabel());
+			data.ActorName = FName(LActor->GetActorLabel());
 			data.ScriptClass;
 			if (!GuidScripts.Contains(id)) GuidScripts.Add(id,data); // dont overwrite it if its already there.
 		}
