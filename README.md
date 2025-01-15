@@ -11,7 +11,7 @@ Simple system to handle making runtime changes to specific level instance actors
  
 4. Set the Manager Name value to the same value you set in your script components.
 
-5. To simplify identifying the actors you want to manage, you can use the editor function to search a specified level instance for every actor that has a script component whose manager name matches this manager. Every match will automatically be added as an entry in the managers Guid map.
+5. To simplify identifying the actors you want to manage, you can use the editor function ClaimGuidsFromlevel() to search a specified level instance for every actor that has a script component whose manager name matches this manager. Every match will automatically be added as an entry in the managers Guid map. This is the recommended way of adding actors to the manager's list as it gathers additional data that helps identify the actor, specifically used for ApplyInEditor() for previewing scripts at in the editor. 
 
 ![image](https://github.com/user-attachments/assets/36621605-480d-4c8e-8066-450a144deda6)
 
@@ -23,7 +23,13 @@ Simple system to handle making runtime changes to specific level instance actors
 
 7. Assign the script to the appropriate guid in the managers map.
 
+# Previewing Scripts
+Because of the way level instances work, you can't apply scripts at design time and have the changes persist when saving the map. But you can apply the scripts in editor to make sure they perform the action you expect them to. You can do this by calling ApplyInEditor(). 
+
 # extra context 
+
+## Watchouts 
+As part of the data gathering that happens with ClaimGuidsFromLevel(), information such as the actors Label and the Level Instance Actor Label are stored for both allowing ApplyInEditor() to reverse search for the actor and allow designers to identify the actor easier. This information is only gathered when the function is executed in the editor, and any changes made to the actor labels will not automatically be reflected. If you change either the level instance or the actors labels after they're added to the list, you'll need to run ClaimGuidsFromLevel() again to update the information - Doing so will not reset the User Friendly name nor the Script class. 
 
 ## Built-in Race Condition Resolution
 If a client requests a script from the subsystem for a manager that isn't registered, the request is queued and dispatched as soon as the manager becomes available. This replaces the old approach of a component retrying after a specified delay, resulting in guaranteed near-instant script execution as soon as possible, at any point in the world life cycle.
