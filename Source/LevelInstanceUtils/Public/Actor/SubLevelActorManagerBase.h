@@ -50,21 +50,36 @@ public:
 		return exists;
 	};
 
+	void OnConstruction(const FTransform& Transform) override;
+
 #if WITH_EDITOR
-	//Automatically create Map Keys from Guids in the specified Level Instance. Helper function to speed up populating this managers clients.
+	/*Automatically create Map Keys from Guids in the specified Level Instance.Helper function to speed up populating this managers clients.
+	This is the prefered method for populating clients and is necessary for previewing changes in editor using ApplyInEditor();
+	*/
 	UFUNCTION(CallInEditor, BlueprintCallable, Category ="Editor")
-	void ClaimGuidsFromlevel();
+	void ClaimGuidsFromLevel();
+
+	/* Apply the scripts at design time. This is for previewing only and script executions will not persist in map save state.
+	   This will only apply to actors that were discovered using ClaimGuidsFromLevel.
+	*/
+	UFUNCTION(CallInEditor, BlueprintCallable, Category = "Editor")
+	void ApplyInEditor();
+
 #endif
 
 #if WITH_EDITORONLY_DATA
 	//When set, ClaimGuidsFromLevel will use the specified Level Instance to build its FGuid Map.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Editor")
 	class ALevelInstance* LevelInstanceToQuery;
+
 #endif
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+
+
 
 	//The name to register this instance under. This is the name actors will use to lookup its manager in the Subsystem.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category ="Manager Settings")

@@ -3,6 +3,7 @@
 
 #include "Actor/SubLevelActorManagerBase.h"
 #include "LevelInstanceRuntimeSubsystem.h"
+#include "Kismet/GameplayStatics.h"
 #include "LevelInstance/LevelInstanceActor.h"
 #include "ActorComponent/SubLevelActorScriptComponent.h"
 
@@ -17,8 +18,17 @@ ASubLevelActorManagerBase::ASubLevelActorManagerBase()
 
 }
 
+void ASubLevelActorManagerBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+
+
+}
+
+
 #if WITH_EDITOR
-void ASubLevelActorManagerBase::ClaimGuidsFromlevel()
+void ASubLevelActorManagerBase::ClaimGuidsFromLevel()
 {
 	if (!LevelInstanceToQuery || !LevelInstanceToQuery->GetLoadedLevel()) return;
 
@@ -34,10 +44,46 @@ void ASubLevelActorManagerBase::ClaimGuidsFromlevel()
 			FLevelInstanceManagerClientData data;
 			data.OwningLevelInstance = FName(LevelInstanceToQuery->GetActorLabel());
 			data.ActorName = FName(LActor->GetActorLabel());
-			data.ScriptClass;
-			if (!GuidScripts.Contains(id)) GuidScripts.Add(id,data); // dont overwrite it if its already there.
+			if (GuidScripts.Contains(id))
+			{
+				FLevelInstanceManagerClientData& Existing = *GuidScripts.Find(id);
+				data.FriendlyName = Existing.FriendlyName;
+				data.ScriptClass = Existing.ScriptClass;				
+			}
+				
+
+			GuidScripts.Add(id,data);
+			MarkPackageDirty();
 		}
 	}
+}
+void ASubLevelActorManagerBase::ApplyInEditor()
+{
+	// Find the appropriate actors and apply the scripts. This is for design time consistency so designers can see the effect without
+	// having to play the level. These scripts will still need to be executed at runtime for changes to persist.
+
+	if (!GetWorld()) return;
+	TArray<AActor*> LevelInstances;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelInstance::StaticClass(), LevelInstances);
+	for (auto& Pair : GuidScripts)
+	{
+		for (auto& Instance : LevelInstances)
+		{
+			ALevelInstance* AsInstance = Cast<ALevelInstance>(Instance);
+			if (!AsInstance || !AsInstance->GetLoadedLevel()) continue;
+			for (auto& Actor : AsInstance->GetLoadedLevel()->Actors)
+			{
+				if (Actor->GetActorLabel().Equals(Pair.Value.ActorName.ToString()) && AsInstance->GetActorLabel().Equals(Pair.Value.OwningLevelInstance.ToString()))
+				{
+					USubLevelActorScriptComponent* ScriptComp = Actor->GetComponentByClass<USubLevelActorScriptComponent>();
+					if (!ScriptComp) continue;
+
+					ScriptComp->InitScript(Pair.Value.ScriptClass);
+				}
+			}
+		}
+	}
+
 }
 #endif
 
