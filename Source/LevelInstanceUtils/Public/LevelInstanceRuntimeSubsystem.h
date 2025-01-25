@@ -37,14 +37,14 @@ struct FLevelManagerClientRequest
 	FName ManagerName{NAME_None};
 
 	UPROPERTY()
-	TWeakObjectPtr<class USubLevelActorScriptComponent> ScriptComponent{ nullptr };
+	TWeakObjectPtr<class ULevelInstanceActorScriptComponent> ScriptComponent{ nullptr };
 
 	UPROPERTY()
 	FGuid ActorId;
 
 	FLevelManagerClientRequest() {};
 
-	FLevelManagerClientRequest(FName managerName, TWeakObjectPtr<class USubLevelActorScriptComponent> scriptComponent, FGuid actorId)
+	FLevelManagerClientRequest(FName managerName, TWeakObjectPtr<class ULevelInstanceActorScriptComponent> scriptComponent, FGuid actorId)
 	{
 		ManagerName = managerName;
 		ScriptComponent = scriptComponent;
@@ -65,12 +65,12 @@ public:
 
 	// Register an valid actor with the current world, under the specified name. bOverrideExisting will replace any managers with the same name.
 	UFUNCTION(BlueprintCallable, Category ="LevelInstanceSubsystem")
-	bool RegisterManagerClass(const FName Name, ASubLevelActorManagerBase* Actor, const bool bOverrideExisting = true);
+	bool RegisterManagerClass(const FName Name, ALevelInstanceActorManagerBase* Actor, const bool bOverrideExisting = true);
 
 
 	// Get the manager class by its registered name.
 	UFUNCTION(BlueprintCallable, Category="LevelInstanceSubsystem")
-	bool GetManagerByName(const FName ManagerName, ASubLevelActorManagerBase*& Manager);
+	bool GetManagerByName(const FName ManagerName, ALevelInstanceActorManagerBase*& Manager);
 	
 
 	/*Handles getting script data for a client component as soon as the manager is available. if the manager is available, it will
@@ -80,7 +80,7 @@ public:
 
 private:
 
-	void OnManagerAdded(FName ManagerName, ASubLevelActorManagerBase* Manager);
+	void OnManagerAdded(FName ManagerName, ALevelInstanceActorManagerBase* Manager);
 
 	void QueueRequest(FLevelManagerClientRequest Request);
 
@@ -90,5 +90,5 @@ private:
 	TMultiMap<FName, FLevelManagerClientRequest> QueuedRequests;
 
 
-	TMap<FName, ASubLevelActorManagerBase*> Managers;
+	TMap<FName, ALevelInstanceActorManagerBase*> Managers;
 };

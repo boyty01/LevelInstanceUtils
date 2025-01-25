@@ -20,16 +20,16 @@
 
 
 #include "LevelInstanceRuntimeSubsystem.h"
-#include "Actor/SubLevelActorManagerBase.h"
-#include "ActorComponent/SubLevelActorScriptComponent.h"
-#include "Object/SubLevelActorScriptBase.h"
+#include "Actor/LevelInstanceActorManagerBase.h"
+#include "ActorComponent/LevelInstanceActorScriptComponent.h"
+#include "Object/LevelInstanceActorScriptBase.h"
 
 void ULevelInstanceRuntimeSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 
 }
 
-bool ULevelInstanceRuntimeSubsystem::RegisterManagerClass(const FName Name, ASubLevelActorManagerBase* Actor, const bool bOverrideExisting)
+bool ULevelInstanceRuntimeSubsystem::RegisterManagerClass(const FName Name, ALevelInstanceActorManagerBase* Actor, const bool bOverrideExisting)
 {
 	if (!bOverrideExisting && Managers.Contains(Name)) return false;
 
@@ -38,7 +38,7 @@ bool ULevelInstanceRuntimeSubsystem::RegisterManagerClass(const FName Name, ASub
 	return true;
 }
 
-bool ULevelInstanceRuntimeSubsystem::GetManagerByName(const FName ManagerName, ASubLevelActorManagerBase*& Manager)
+bool ULevelInstanceRuntimeSubsystem::GetManagerByName(const FName ManagerName, ALevelInstanceActorManagerBase*& Manager)
 {
 
 	bool exists = Managers.Contains(ManagerName);
@@ -54,8 +54,8 @@ void ULevelInstanceRuntimeSubsystem::RequestScriptFromManager(const FLevelManage
 	// if the manager exists, dispatch immediately.
 	if (Managers.Contains(RequestData.ManagerName))
 	{
-		ASubLevelActorManagerBase* Manager = *Managers.Find(RequestData.ManagerName);
-		TSubclassOf<USubLevelActorScriptBase> ScriptClass;
+		ALevelInstanceActorManagerBase* Manager = *Managers.Find(RequestData.ManagerName);
+		TSubclassOf<ULevelInstanceActorScriptBase> ScriptClass;
 		if (Manager->RequestScript(RequestData.ActorId, ScriptClass))
 		{
 			if (RequestData.ScriptComponent.IsValid())
@@ -68,7 +68,7 @@ void ULevelInstanceRuntimeSubsystem::RequestScriptFromManager(const FLevelManage
 	QueueRequest(RequestData);
 }
 
-void ULevelInstanceRuntimeSubsystem::OnManagerAdded(FName ManagerName, ASubLevelActorManagerBase* Manager)
+void ULevelInstanceRuntimeSubsystem::OnManagerAdded(FName ManagerName, ALevelInstanceActorManagerBase* Manager)
 {
 	if (!Manager) return;
 
